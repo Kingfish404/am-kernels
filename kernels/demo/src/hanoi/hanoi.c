@@ -57,4 +57,5 @@ void hanoi() {
   for (c = H; c; c--) add_disk(0, c);
 
   move(H, 0, 2, 1);
+  halt(0);
 }
