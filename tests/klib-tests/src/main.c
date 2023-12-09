@@ -3,7 +3,12 @@
 #include <klib-macros.h>
 #include <stdint.h>
 #include <limits.h>
-#include <assert.h>
+
+__attribute__((noinline)) void check(bool cond)
+{
+    if (!cond)
+        halt(1);
+}
 
 #define N 32
 uint8_t data[N];
@@ -14,7 +19,7 @@ void check_seq(int l, int r, int val)
     int i;
     for (i = l; i < r; i++)
     {
-        assert(data[i] == val + i - l);
+        check(data[i] == val + i - l);
     }
 }
 
@@ -24,7 +29,7 @@ void check_eq(int l, int r, int val)
     int i;
     for (i = l; i < r; i++)
     {
-        assert(data[i] == val);
+        check(data[i] == val);
     }
 }
 
@@ -42,7 +47,7 @@ void test_strcpy()
     char buf[] = "0123456789";
     for (int i = 0; i < 10; i++)
     {
-        assert(strcpy((char *)data + i, buf) == (char *)data + i);
+        check(strcpy((char *)data + i, buf) == (char *)data + i);
         check_seq(i, i + 1, buf[0]);
         check_seq(i, i + sizeof(buf) / sizeof(char) - 1, buf[0]);
     }
@@ -55,23 +60,23 @@ void test_strncpy()
     int n = 5;
     for (int i = 0; i < 10; i++)
     {
-        assert(strncpy((char *)data + i, buf, n) == (char *)data + i + n);
+        check(strncpy((char *)data + i, buf, n) == (char *)data + i + n);
         check_seq(i, i + n, buf[0]);
     }
     n = buf_len + 4;
     for (int i = 0; i < 10; i++)
     {
-        assert(strncpy((char *)data + i, buf, n) == (char *)data + i + n);
+        check(strncpy((char *)data + i, buf, n) == (char *)data + i + n);
         check_seq(i, i + buf_len, buf[0]);
         for (size_t j = 0; j < n; j++)
         {
             if (j < buf_len)
             {
-                assert(data[i + j] == buf[j]);
+                check(data[i + j] == buf[j]);
             }
             else
             {
-                assert(data[i + j] == '\0');
+                check(data[i + j] == '\0');
             }
         }
     }
@@ -82,10 +87,10 @@ void test_strcat()
     char buf[] = "0123456789";
     int buf_len = sizeof(buf) / sizeof(char) - 1;
     data[0] = '\0';
-    assert(strcat((char *)data, buf) == (char *)data);
+    check(strcat((char *)data, buf) == (char *)data);
     check_seq(0, buf_len, buf[0]);
     check_seq(buf_len, buf_len + 1, '\0');
-    assert(strcat((char *)data, buf) == (char *)data);
+    check(strcat((char *)data, buf) == (char *)data);
     check_seq(buf_len, buf_len * 2, buf[0]);
 }
 
@@ -112,13 +117,13 @@ void test_memmove()
     int buf_len = sizeof(buf) / sizeof(char) - 1;
     for (size_t i = 0; i < 10; i++)
     {
-        assert(memmove(data + i, buf, buf_len) == data + i);
+        check(memmove(data + i, buf, buf_len) == data + i);
         check_seq(i, i + buf_len, buf[0]);
     }
     memmove(data, buf, buf_len);
     for (size_t i = 1; i < 10; i++)
     {
-        assert(memmove(data + i, data + i - 1, buf_len) == data + i);
+        check(memmove(data + i, data + i - 1, buf_len) == data + i);
         check_seq(i, i + buf_len, buf[0]);
     }
 }
@@ -129,7 +134,7 @@ void test_memcpy()
     int buf_len = sizeof(buf) / sizeof(char) - 1;
     for (size_t i = 0; i < 10; i++)
     {
-        assert(memmove(data + i, buf, buf_len) == data + i);
+        check(memmove(data + i, buf, buf_len) == data + i);
         check_seq(i, i + buf_len, buf[0]);
     }
 }
@@ -140,7 +145,7 @@ void test_strlen()
     int buf_len = sizeof(buf) / sizeof(char) - 1;
     for (size_t i = 0; i < 4; i++)
     {
-        assert(strlen(buf + i) == buf_len - i);
+        check(strlen(buf + i) == buf_len - i);
     }
 }
 
@@ -148,19 +153,19 @@ void test_strcmp()
 {
     char buf[128] = "0123456789";
     data[0] = '\0';
-    assert(strcmp(buf, buf) == 0);
-    assert(strcmp(buf, (char *)data) > 0);
+    check(strcmp(buf, buf) == 0);
+    check(strcmp(buf, (char *)data) > 0);
     data[0] = '1';
-    assert(strcmp(buf, (char *)data) < 0);
+    check(strcmp(buf, (char *)data) < 0);
 
     sprintf(buf, "%s", "Hello world!\n");
-    assert(strcmp(buf, "Hello world!\n") == 0);
+    check(strcmp(buf, "Hello world!\n") == 0);
 
     sprintf(buf, "%d + %d = %d\n", 1, 1, 2);
-    assert(strcmp(buf, "1 + 1 = 2\n") == 0);
+    check(strcmp(buf, "1 + 1 = 2\n") == 0);
 
     sprintf(buf, "%d + %d = %d\n", 2, 10, 12);
-    assert(strcmp(buf, "2 + 10 = 12\n") == 0);
+    check(strcmp(buf, "2 + 10 = 12\n") == 0);
 }
 
 void test_strncmp()
@@ -168,10 +173,10 @@ void test_strncmp()
     char buf[] = "0123456789";
     int buf_len = sizeof(buf) / sizeof(char) - 1;
     data[0] = '\0';
-    assert(strncmp(buf, buf, buf_len) == 0);
-    assert(strncmp(buf, (char *)data, buf_len) > 0);
+    check(strncmp(buf, buf, buf_len) == 0);
+    check(strncmp(buf, (char *)data, buf_len) > 0);
     data[0] = '1';
-    assert(strncmp(buf, (char *)data, buf_len) < 0);
+    check(strncmp(buf, (char *)data, buf_len) < 0);
 }
 
 void test_memcmp()
@@ -179,10 +184,10 @@ void test_memcmp()
     char buf[] = "0123456789";
     int buf_len = sizeof(buf) / sizeof(char) - 1;
     data[0] = '\0';
-    assert(memcmp(buf, buf, buf_len) == 0);
-    assert(memcmp(buf, (char *)data, buf_len) > 0);
+    check(memcmp(buf, buf, buf_len) == 0);
+    check(memcmp(buf, (char *)data, buf_len) > 0);
     data[0] = '1';
-    assert(memcmp(buf, (char *)data, buf_len) < 0);
+    check(memcmp(buf, (char *)data, buf_len) < 0);
 }
 
 void test_sprintf()
@@ -195,15 +200,15 @@ void test_sprintf()
         "0", "126322567", "2147483647", "-2147483648", "-2147483647",
         "252645135", "126322567", "-1"};
     sprintf(buf, "Hello world!");
-    assert(strcmp(buf, "Hello world!") == 0);
+    check(strcmp(buf, "Hello world!") == 0);
     sprintf(buf, "Hello %s!", "world");
-    assert(strcmp(buf, "Hello world!") == 0);
+    check(strcmp(buf, "Hello world!") == 0);
     sprintf(buf, "Hello %s! %d + %d = %d", "world", 1, 2, 3);
-    assert(strcmp(buf, "Hello world! 1 + 2 = 3") == 0);
+    check(strcmp(buf, "Hello world! 1 + 2 = 3") == 0);
     for (size_t i = 0; i < sizeof(data_test) / sizeof(long long); i++)
     {
         sprintf(buf, "%d", data_test[i]);
-        assert(strcmp(buf, data_test_str[i]) == 0);
+        check(strcmp(buf, data_test_str[i]) == 0);
     }
 }
 
@@ -226,5 +231,6 @@ int main(int argc, char const *argv[])
     // third test, for sprintf
     test_sprintf();
 
+    printf("[INFO] All tests passed.\n");
     return 0;
 }
