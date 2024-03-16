@@ -4,7 +4,7 @@
 
 extern char _heap_start;
 
-const int lenght = 0xff;
+const int lenght = 1024 * 4 * 1024;
 
 int data[0x10] = {'X'};
 int data_zero[0x100];

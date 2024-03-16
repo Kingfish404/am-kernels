@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+void putch(char ch);
+
 int main()
 {
     char str[26];
