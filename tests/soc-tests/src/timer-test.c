@@ -1,6 +1,7 @@
-#include <am.h>
 #include <stdio.h>
 #include <stdint.h>
+
+#include <am.h>
 #include <klib-macros.h>
 
 static uint64_t uptime() { return io_read(AM_TIMER_UPTIME).us; }
