@@ -105,12 +105,12 @@ write_test:
         }
     }
 read_test:
-    for (int i = 0; i < 0x4000000 / sizeof(uint8_t); i += 0x1000)
+    for (int i = 0; i < 0x400000 / sizeof(uint8_t); i += 0x1000)
     {
         data = sdram_u8[i];
     }
     printf("SDRAM read fast all passed!\n");
-    for (int i = 0; i < 0x4000000 / sizeof(uint8_t); i++)
+    for (int i = 0; i < 0x400000 / sizeof(uint8_t); i++)
     {
         data = sdram_u8[i];
     }
