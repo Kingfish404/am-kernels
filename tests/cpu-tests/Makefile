@@ -10,7 +10,7 @@ COLOR_NONE  = \033[0m
 ALL = $(basename $(notdir $(shell find tests/. -name "*.c")))
 
 all: $(addprefix Makefile., $(ALL))
-	@echo "" $(ALL)
+	@echo "test list [$(words $(ALL)) item(s)]:" $(ALL)
 
 $(ALL): %: Makefile.%
 
@@ -19,7 +19,7 @@ Makefile.%: tests/%.c latest
 	@if make -s -f $@ ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) $(MAKECMDGOALS); then \
 		printf "[%14s] $(COLOR_GREEN)PASS!$(COLOR_NONE)\n" $* >> $(RESULT); \
 	else \
-		printf "[%14s] $(COLOR_RED)FAIL!$(COLOR_NONE)\n" $* >> $(RESULT); \
+		printf "[%14s] $(COLOR_RED)***FAIL***$(COLOR_NONE)\n" $* >> $(RESULT); \
 	fi
 	-@rm -f Makefile.$*
 
