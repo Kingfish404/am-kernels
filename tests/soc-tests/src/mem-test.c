@@ -1,5 +1,4 @@
-#include <stdint.h>
-#include <stdio.h>
+#include "klib.h"
 #include "trap.h"
 
 extern char _heap_start;
