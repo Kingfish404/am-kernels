@@ -3,9 +3,9 @@ SRCS = $(shell find src/ -name "*.c")
 include $(AM_HOME)/Makefile
 ITERATIONS=500000
 ifeq ($(PLATFORM), npc)
-ITERATIONS:=100
+ITERATIONS:=10
 else ifeq ($(PLATFORM), ysyxsoc)
-ITERATIONS:=1
+ITERATIONS:=2
 else ifeq ($(PLATFORM), nemu)
 ITERATIONS:=100
 endif
